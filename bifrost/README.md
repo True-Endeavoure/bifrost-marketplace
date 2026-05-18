@@ -25,7 +25,8 @@ Restart Claude Code and you're connected.
 | `hooks/hooks.json` | PostToolUse → /hooks/peek, PostCompact → /hooks/compact, Stop → bifrost-channel wake-stream |
 | `monitors/monitors.json` | Persistent WS to bifrost-api.com via the daemon — wake events arrive as notifications |
 | `bin/bifrost-channel` | Self-contained Go binary (cross-compiled for darwin/arm64, linux/amd64, windows/amd64) |
-| `skills/` | Bifrost-curated skills: memo, recall, standards, graphify |
+
+Skills are queried at runtime via the `skills_search` MCP tool — they live in the Bifrost DB, not in this repo.
 
 ## Architecture
 
