@@ -1,0 +1,11 @@
+{
+  "name": "bifrost",
+  "description": "Bifrost agent fleet plugin — MCP server, hooks, skills, wake-stream daemon",
+  "version": "0.1.0",
+  "author": {
+    "name": "True Endeavoure",
+    "email": "zguithues@gmail.com"
+  },
+  "homepage": "https://bifrost-api.com",
+  "repository": "https://github.com/True-Endeavoure/bifrost-marketplace"
+}

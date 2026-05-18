@@ -1,0 +1,22 @@
+{
+  "name": "bifrost-marketplace",
+  "owner": {
+    "name": "True Endeavoure",
+    "email": "zguithues@gmail.com"
+  },
+  "metadata": {
+    "description": "Bifrost agent fleet — unified MCP server, hooks, skills, agent types, wake routing"
+  },
+  "plugins": [
+    {
+      "name": "bifrost",
+      "source": "./bifrost",
+      "description": "Bifrost agent plugin — codemode MCP, stop/peek/compact hooks, fleet skills, agent types, bifrost-channel daemon",
+      "version": "0.1.0",
+      "author": {
+        "name": "True Endeavoure"
+      },
+      "homepage": "https://bifrost-api.com"
+    }
+  ]
+}

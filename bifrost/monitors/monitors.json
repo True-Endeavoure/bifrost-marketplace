@@ -1,0 +1,7 @@
+[
+  {
+    "name": "bifrost-wake-stream",
+    "command": "${CLAUDE_PLUGIN_ROOT}/bin/bifrost-channel --monitor",
+    "description": "Persistent WS to bifrost-api.com — wake events for inbound messages, queue items, system alerts"
+  }
+]

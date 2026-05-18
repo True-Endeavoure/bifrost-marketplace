@@ -1,0 +1,46 @@
+{
+  "PostToolUse": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "http",
+          "url": "https://bifrost-api.com/hooks/peek",
+          "timeout": 5,
+          "headers": {
+            "Authorization": "Bearer $BIFROST_API_KEY"
+          },
+          "allowedEnvVars": ["BIFROST_API_KEY"]
+        }
+      ]
+    }
+  ],
+  "PostCompact": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "http",
+          "url": "https://bifrost-api.com/hooks/compact",
+          "timeout": 10,
+          "headers": {
+            "Authorization": "Bearer $BIFROST_API_KEY"
+          },
+          "allowedEnvVars": ["BIFROST_API_KEY"]
+        }
+      ]
+    }
+  ],
+  "Stop": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/bin/bifrost-channel --stop-hook",
+          "timeout": 86400
+        }
+      ]
+    }
+  ]
+}

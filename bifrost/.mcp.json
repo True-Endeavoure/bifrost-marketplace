@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "bifrost": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/bin/bifrost-channel",
+      "args": ["--mcp"],
+      "env": {
+        "BIFROST_URL": "${BIFROST_URL:-https://bifrost-api.com}",
+        "BIFROST_API_KEY": "${BIFROST_API_KEY}"
+      }
+    }
+  }
+}
