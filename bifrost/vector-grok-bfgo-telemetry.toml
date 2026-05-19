@@ -1,0 +1,62 @@
+# Vector config sample — ingest [bf-go] TELEMETRY structured log lines into BifrostEx metrics
+#
+# Wire on the host running Vector (likely sevro). Pair with bf-go commit 36e9aaf
+# (TELEMETRY peek_cache_stale log lines) + forge commit a0981827
+# (POST /metrics persists to TimescaleDB) + e5e708d6 (14 events attached).
+#
+# Epic 019e3ddf-13f7 AR-VECTOR-INGEST-BFGO-TELEMETRY — the missing operator-side
+# coordination piece.
+
+[sources.bf_go_journald]
+type = "journald"
+include_units = ["bf-go.service"]
+# Pulls lines like:
+#   [bf-go] TELEMETRY peek_cache_stale reason="fetch_failed_stale" agent="heimdall" cache=26 api=0 drift_seconds=42.0
+
+[transforms.bf_go_telemetry_parse]
+type = "remap"
+inputs = ["bf_go_journald"]
+source = '''
+# Match the canonical TELEMETRY-prefix line shape
+parsed, err = parse_regex(.message, r'^\[bf-go\] TELEMETRY (?P<event>\w+) reason="(?P<reason>[^"]+)" agent="(?P<agent>[^"]+)" cache=(?P<cache>-?\d+) api=(?P<api>-?\d+) drift_seconds=(?P<drift>-?[\d.]+)$')
+if err == null {
+  .metric = "bifrost.bf_go." + parsed.event
+  .value = to_float!(parsed.drift)
+  .tags = {
+    "reason": parsed.reason,
+    "agent": parsed.agent,
+    "cache_value": parsed.cache,
+    "api_value": parsed.api
+  }
+  .keep = true
+} else {
+  .keep = false
+}
+'''
+
+[transforms.bf_go_telemetry_filter]
+type = "filter"
+inputs = ["bf_go_telemetry_parse"]
+condition = '.keep == true'
+
+[sinks.bifrost_metrics]
+type = "http"
+inputs = ["bf_go_telemetry_filter"]
+uri = "https://bifrost-api.com/metrics"
+method = "post"
+encoding.codec = "json"
+auth.strategy = "bearer"
+auth.token = "${BIFROST_MACHINE_API_KEY}"
+batch.max_events = 100
+batch.timeout_secs = 5
+
+# Operator note:
+# - BIFROST_MACHINE_API_KEY must be set in the Vector container/host env
+# - POST /metrics handler validates name + value, packs tags into source field
+#   as key=value;key=value (forge a0981827)
+# - Future: when /metrics gains a structured-tags jsonb column, swap to that
+#
+# Smoke test post-deploy:
+#   1. Trigger a bf-go peek-cache stale event (or wait for natural occurrence)
+#   2. Query: SELECT * FROM metrics WHERE metric LIKE 'bifrost.bf_go.%' ORDER BY timestamp DESC LIMIT 5
+#   3. Expected: row with metric='bifrost.bf_go.peek_cache_stale' within 60s
